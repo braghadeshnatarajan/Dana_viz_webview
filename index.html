@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Capture Image</title>
     <script>
-        let clickCount = 0; // Variable to keep track of the number of clicks
+        let buttonClicked = false; // Variable to keep track of whether the button has been clicked
 
         function openCamera(senderId) {
             top.postMessage({ "event": "open-camera", "senderId": senderId }, '*');
@@ -25,22 +25,21 @@
         }, false);
 
         function handleButtonClick() {
-            clickCount++; // Increment the click count
+            if (!buttonClicked) { // Check if the button has not been clicked before
+                // Get the senderId parameter from the URL query string
+                var queryString = window.location.search;
+                var urlParams = new URLSearchParams(queryString);
+                var senderId = urlParams.get("senderId");
 
-            // Get the senderId parameter from the URL query string
-            var queryString = window.location.search;
-            var urlParams = new URLSearchParams(queryString);
-            var senderId = urlParams.get("senderId");
+                // Call the openCamera() function with the senderId parameter
+                if (senderId) {
+                    openCamera(senderId);
+                } else {
+                    openCamera();
+                }
 
-            // Call the openCamera() function with the senderId parameter
-            if (senderId) {
-                openCamera(senderId);
-            } else {
-                openCamera();
-            }
-
-            if (clickCount === 2) { // Check if clicked twice
-                document.getElementById("open-camera").disabled = true; // Disable the button after clicking twice
+                buttonClicked = true; // Set the buttonClicked variable to true to prevent multiple clicks
+                document.getElementById("open-camera").disabled = true; // Disable the button after clicking
             }
         }
     </script>
